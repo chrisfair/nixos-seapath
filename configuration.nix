@@ -7,6 +7,12 @@ in
 
 {
 
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/main.tar.gz") {
+      inherit pkgs;
+    };
+  };
+
   boot.kernelPackages = pkgs.linuxPackages-rt_latest;
   imports =
     [ # Include the results of the hardware scan.
