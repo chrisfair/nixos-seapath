@@ -1,6 +1,11 @@
 { config, lib, pkgs, ... }:
 
+let 
+  cockpitPackages = import ./packages/cockpit { inherit pkgs; };
+in
+
 {
+
   virtualisation = {
     libvirtd = {
       enable = true;
@@ -37,7 +42,7 @@
     qemu
     libvirt
     cockpit
-    nur.repos.rycee.cockpit-machines
+    cockpitPackages.virtual-machines
     glib-networking
     virt-manager
     virt-viewer
