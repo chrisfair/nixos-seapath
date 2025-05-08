@@ -37,7 +37,7 @@
     qemu
     libvirt
     cockpit
-    nur.repos.dukzcry.cockpit-machines
+    nur.repos.rycee.cockpit-machines
     glib-networking
     virt-manager
     virt-viewer
