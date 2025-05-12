@@ -25,7 +25,7 @@ stdenv.mkDerivation rec {
       gunzip $out/share/cockpit/machines/index.js.gz
     fi
 
-    if m -f $out/share/cockpit/machines/index.js; then
+    if [ -f "$out/share/cockpit/machines/index.js" ]; then
       sed -i "s#/usr/bin/python3#/usr/bin/env python3#ig" $out/share/cockpit/machines/index.js
       sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#ig" $out/share/cockpit/machines/index.js
       gzip -9 $out/share/cockpit/machines/index.js
@@ -34,15 +34,13 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/share/cockpit/machines
-    cp -r * $out/share/cockpit/machines
-
-    if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
-      gunzip $out/share/cockpit/machines/index.js.gz
-    fi
-
-    if [ -f "$out/share/cockpit/machines/index.css.gz" ]; then
-      gunzip $out/share/cockpit/machines/index.css.gz
-    fi
+    if [ -d dist ]; then
+      cp -r dist/* $out/share/cockpit/machines
+    else 
+      echo "ERROR: dist/ not found"
+      ls -l
+      exit 1
+    fi 
   '';
 
   dontBuild = true;
