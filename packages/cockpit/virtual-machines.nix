@@ -15,11 +15,30 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace Makefile --replace /usr/share $out/share
-    touch pkg/lib/cockpit.js
-    touch pkg/lib/cockpit-po-plugin.js
-    touch dist/manifest.json
-  '';
 
+    # Replace manifest.json with a working one
+    cat > dist/manifest.json <<EOF
+    {
+      "module": "machines",
+      "index": "index.html",
+      "label": "Virtual Machines",
+      "requires": ["cockpit", "libvirt"],
+      "js": ["index.js"],
+      "css": ["index.css"],
+      "menu": {
+        "vms": {
+          "label": "Virtual Machines",
+          "path": "index.html",
+          "order": 60,
+          "keywords": [
+            { "matches": ["libvirt", "vm", "kvm", "qemu", "virtual"] }
+          ]
+        }
+      }
+    }
+  EOF
+    '';
+ 
   postFixup = ''
     if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
       gunzip $out/share/cockpit/machines/index.js.gz
