@@ -1,8 +1,9 @@
 { config, lib, pkgs, ... }:
 
 let
-maybeLocalUsers = if builtins.pathExists ./local-users.nix then [ ./local-users.nix ] else [];
-maybeRootUser = if builtins.pathExists ./root-user.nix then [ ./root-user.nix ] else [];
+altLocalUsers = if builtins.pathExists ./local-users.nix then [ ./local-users.nix ] else [];
+altRootUser = if builtins.pathExists ./root-user.nix then [ ./root-user.nix ] else [];
+altVMDrives = if builtins.pathExists ./vmdrives.nix then [ ./vmdrives.nix ] else [];
 in
 
 {
@@ -14,7 +15,7 @@ in
       ./hypervisor.nix
       ./localization.nix
       ./base-users.nix
-    ] ++ maybeLocalUsers ++ maybeRootUser;
+    ] ++ altLocalUsers ++ altRootUser ++ altVMDrives;
 
 
   # Use the systemd-boot EFI boot loader.
