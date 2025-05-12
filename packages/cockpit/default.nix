@@ -1,6 +1,6 @@
 { pkgs, ... }:
 
 {
-  virtual-machines = pkgs.callPackage ./virtual-machines.nix { };
+  machines = pkgs.callPackage ./machines.nix { };
 }
 

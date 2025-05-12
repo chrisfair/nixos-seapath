@@ -1,10 +1,13 @@
 { config, lib, pkgs, ... }:
 
 let
-  cockpitMachines = pkgs.callPackage ./packages/cockpit/virtual-machines.nix { };
+  cockpitMachines = pkgs.callPackage ./packages/cockpit/machines.nix { };
 in
 
 {
+
+  environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
+  users.groups.libvirt = { };
 
   virtualisation = {
     libvirtd = {
@@ -38,13 +41,8 @@ in
     };
   };
 
-  systemd.services.cockpit.environment = {
-    XDG_DATA_DIRS = "${cockpitMachines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
-  };
-
-  systemd.services.cockpit-ws.environment = {
-    XDG_DATA_DIRS = "${cockpitMachines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
-  };
+  environment.sessionVariables.XDG_DATA_DIRS = 
+    "${cockpitMachines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
 
   environment.systemPackages = with pkgs; [
     qemu
@@ -79,5 +77,4 @@ in
       echo "Self-signed Cockpit cert generated."
       '';
   };
-
 }

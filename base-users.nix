@@ -10,6 +10,15 @@
     hashedPassword = "$6$TeyyDEuz0P7JdDqL$DKAFShaZi9lMrVTSWGWrbEWPsFNHmeTPjVPuNiUklvKDh/KGtulKeXzH4PCtVJ1z7ceQa/v1kcCe5Vl0aYoU7/";
   };
 
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.libvirt.unix.manage" &&
+          subject.isInGroup("libvirt")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
   users.users.ansible = {
     isNormalUser = true;
     extraGroups = [ "admin" "wheel" "networkmanager" "libvirt" ];
