@@ -38,6 +38,14 @@ in
     };
   };
 
+  systemd.services.cockpit.environment = {
+    XDG_DATA_DIRS = "${cockpitPackages.virtual-machines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
+  };
+
+  systemd.services.cockpit-ws.environment = {
+    XDG_DATA_DIRS = "${cockpitPackages.virtual-machines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
+  };
+
   environment.systemPackages = with pkgs; [
     qemu
     libvirt

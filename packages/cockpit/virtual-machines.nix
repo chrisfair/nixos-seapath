@@ -27,6 +27,19 @@ stdenv.mkDerivation rec {
     gzip -9 $out/share/cockpit/machines/index.js
   '';
 
+  installPhase = ''
+    mkdir -p $out/share/cockpit/machines
+    cp -r * $out/share/cockpit/machines
+
+    if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.js.gz
+    fi
+
+    if [ -f "$out/share/cockpit/machines/index.css.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.css.gz
+    fi
+  '';
+
   dontBuild = true;
 
   meta = with lib; {
