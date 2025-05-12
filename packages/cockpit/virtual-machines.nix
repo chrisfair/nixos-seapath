@@ -21,10 +21,15 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    gunzip $out/share/cockpit/machines/index.js.gz
-    sed -i "s#/usr/bin/python3#/usr/bin/env python3#ig" $out/share/cockpit/machines/index.js
-    sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#ig" $out/share/cockpit/machines/index.js
-    gzip -9 $out/share/cockpit/machines/index.js
+    if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.js.gz
+    fi
+
+    if m -f $out/share/cockpit/machines/index.js; then
+      sed -i "s#/usr/bin/python3#/usr/bin/env python3#ig" $out/share/cockpit/machines/index.js
+      sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#ig" $out/share/cockpit/machines/index.js
+      gzip -9 $out/share/cockpit/machines/index.js
+    fi
   '';
 
   installPhase = ''
