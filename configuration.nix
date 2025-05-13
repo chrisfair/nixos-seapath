@@ -1,7 +1,5 @@
 { config, lib, pkgs, ... }:
 
-
-
 let
 altLocalUsers = if builtins.pathExists ./local-users.nix then [ ./local-users.nix ] else [];
 altRootUser = if builtins.pathExists ./root-user.nix then [ ./root-user.nix ] else [];
@@ -11,15 +9,13 @@ in
 {
   nixpkgs.config = {
     allowUnfree = true;
-  }
+  };
 
-  # Add the NUR channel if not already added
-  nixpkgs.overlays = [
-    (import (builtins.fetchTarball {
-      url = "https://github.com/nixos/nur/archive/master.tar.gz";
-      sha256 = "...";  # you can get the correct hash from the fetch
-    }))
-  ];
+  nixpkgs.config.packageOverrides = pkgs: {
+    nur = import (builtins.fetchTarball "https://github.com/nix-community/NUR/archive/main.tar.gz") {
+      inherit pkgs;
+    };
+  };
   
   boot.kernelPackages = pkgs.linuxPackages-rt_latest;
   imports =
