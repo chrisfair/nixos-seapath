@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  cockpitMachines = pkgs.callPackage ./packages/cockpit/machines.nix { };
+  cockpit-machines = pkgs.callPackage ./packages/cockpit/machines.nix { };
 in
 
 {
@@ -42,13 +42,13 @@ in
   };
 
   environment.sessionVariables.XDG_DATA_DIRS = 
-    "${cockpitMachines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
+    "${cockpit-machines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
 
   environment.systemPackages = with pkgs; [
     qemu
     libvirt
     cockpit
-    cockpitMachines
+    cockpit-machines
     glib-networking
     virt-manager
     virt-viewer
