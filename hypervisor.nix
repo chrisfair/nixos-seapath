@@ -1,11 +1,10 @@
 { config, lib, pkgs, ... }:
 
 let
-  cockpit-machines = pkgs.callPackage ./packages/cockpit/machines.nix { };
+  cockpit-machines = pkgs.nurPackages.cockpit-machines;  # Pulling from NUR
 in
 
 {
-
   environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
   environment.etc."libvirt/libvirt.conf".text = ''
     uri_default = "qemu:///system"
@@ -57,21 +56,25 @@ in
     };
   };
 
-  environment.sessionVariables.XDG_DATA_DIRS = 
+  environment.sessionVariables.XDG_DATA_DIRS =
     "${cockpit-machines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
 
   environment.systemPackages = with pkgs; [
     qemu
     libvirt
     cockpit
-    cockpit-machines
+    cockpit-machines  # Directly using the NUR package here
     glib-networking
     virt-manager
     virt-viewer
-    spice 
+    spice
     spice-gtk
     spice-protocol
   ];
+
+  systemd.services.cockpit.environment = {
+    XDG_DATA_DIRS = "${cockpit-machines}/share:${pkgs.glib}/share:/usr/local/share:/usr/share";
+  };
 
   system.activationScripts.cockpitSelfSignedCert = {
     text = ''
@@ -91,6 +94,6 @@ in
       chmod 600 /etc/cockpit/ws-certs.d/0-self-signed.pem
 
       echo "Self-signed Cockpit cert generated."
-      '';
+    '';
   };
 }
