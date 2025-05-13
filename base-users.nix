@@ -12,8 +12,10 @@
 
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
-      if (action.id == "org.libvirt.unix.manage" &&
-          subject.isInGroup("libvirt")) {
+      if (
+          subject.isInGroup("libvirt")) ||
+          subject.isInGroup("wheel") ||
+          subject.user == "admin" ){
         return polkit.Result.YES;
       }
     });
