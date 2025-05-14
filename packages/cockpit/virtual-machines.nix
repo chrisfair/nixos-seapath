@@ -9,44 +9,65 @@ stdenv.mkDerivation rec {
     sha256 = "TCzXJAfWU3t696+dTBSen35SVhM7eiVJi4+b+DNb52M="; # Update via `nix-prefetch-url`
   };
 
-  nativeBuildInputs = [
-    gettext
-    nodejs_18
-    python3
-    pkg-config
-    git
-  ];
+  nativeBuildInputs = [ gettext ];
 
-  buildPhase = ''
-    runHook preBuild
-    make
-    runHook postBuild
+  makeFlags = [ "DESTDIR=$(out)" "PREFIX=" ];
+
+  postPatch = ''
+    substituteInPlace Makefile --replace /usr/share $out/share
+
+    # Replace manifest.json with a working one
+    cat > dist/manifest.json <<EOF
+    {
+      "module": "machines",
+      "index": "index.html",
+      "label": "Virtual Machines",
+      "requires": ["cockpit", "libvirt"],
+      "js": ["index.js"],
+      "css": ["index.css"],
+      "menu": {
+        "vms": {
+          "label": "Virtual Machines",
+          "path": "index.html",
+          "order": 60,
+          "keywords": [
+            { "matches": ["libvirt", "vm", "kvm", "qemu", "virtual"] }
+          ]
+        }
+      }
+    }
+  EOF
+    '';
+ 
+  postFixup = ''
+    if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.js.gz
+    fi
+
+    if [ -f "$out/share/cockpit/machines/index.js" ]; then
+      sed -i "s#/usr/bin/python3#/usr/bin/env python3#ig" $out/share/cockpit/machines/index.js
+      sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#ig" $out/share/cockpit/machines/index.js
+      gzip -9 $out/share/cockpit/machines/index.js
+    fi
   '';
 
   installPhase = ''
-    runHook preInstall
     mkdir -p $out/share/cockpit/machines
-    cp -r dist/* $out/share/cockpit/machines
-    runHook postInstall
+    if [ -d dist ]; then
+      cp -r dist/* $out/share/cockpit/machines
+    else 
+      echo "ERROR: dist/ not found"
+      ls -l
+      exit 1
+    fi 
   '';
+
+  dontBuild = true;
 
   meta = with lib; {
     description = "Cockpit UI for virtual machines";
-    homepage    = "https://github.com/cockpit-project/cockpit-machines";
-    license     = licenses.lgpl21;
-    platforms   = platforms.linux;
+    license = licenses.lgpl21;
+    homepage = "https://github.com/cockpit-project/cockpit-machines";
+    platforms = platforms.linux;
   };
-
-  postPatch = ''
-    substituteInPlace Makefile \
-    --replace 'git describe' 'echo "${version}"'
-
-    # Disable the real rule, insert our own that ensures the directory exists
-    sed -i '/pkg\/lib\/cockpit-po-plugin.js:/,/^[^ \t]/d' Makefile
-    
-     # Append new rule with proper tabs
-    echo 'pkg/lib/cockpit-po-plugin.js:' >> Makefile
-    printf '\tmkdir -p pkg/lib\n\techo "{}" > pkg/lib/cockpit-po-plugin.js\n' >> Makefile
-  '';
 }
-
