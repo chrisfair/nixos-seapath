@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation rec {
   pname = "cockpit-machines";
-  version = "330";
+  version = "327";
 
   src = fetchzip {
     url = "https://github.com/cockpit-project/cockpit-machines/archive/refs/tags/${version}.tar.gz";
