@@ -43,12 +43,10 @@ stdenv.mkDerivation rec {
 
     # Disable the real rule, insert our own that ensures the directory exists
     sed -i '/pkg\/lib\/cockpit-po-plugin.js:/,/^[^ \t]/d' Makefile
-
-    cat >> Makefile <<EOF
-pkg/lib/cockpit-po-plugin.js:
-\tmkdir -p pkg/lib
-\techo '{}' > pkg/lib/cockpit-po-plugin.js
-EOF
-'';
+    
+     # Append new rule with proper tabs
+    echo 'pkg/lib/cockpit-po-plugin.js:' >> Makefile
+    printf '\tmkdir -p pkg/lib\n\techo "{}" > pkg/lib/cockpit-po-plugin.js\n' >> Makefile
+  '';
 }
 
