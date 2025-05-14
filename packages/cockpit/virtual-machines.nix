@@ -39,11 +39,13 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace Makefile \
-      --replace 'git describe' 'echo "${version}"' \
+    --replace 'git describe' 'echo "${version}"' \
 
-      # Disable cockpit-po-plugin.js generation
-      --replace 'git rev-parse --show-toplevel' '.' \
-      --replace 'git log -1 --pretty=format:%ct' 'date +%s'
+    # Disable cockpit-po-plugin.js generation
+    sed -i '/pkg\/lib\/cockpit-po-plugin.js:/,/^[^ \t]/d' Makefile
+    echo "pkg/lib/cockpit-po-plugin.js:" >> Makefile
+    echo -e "\techo '{}' > pkg/lib/cockpit-po-plugin.js" >> Makefile
+
   '';
 }
 
