@@ -6,7 +6,7 @@ stdenv.mkDerivation rec {
 
   src = fetchzip {
     url = "https://github.com/cockpit-project/cockpit-machines/archive/refs/tags/${version}.tar.gz";
-    sha256 = "0r52wl4ap4jwxy4p8j0pvs4r9jww1dp2n84j0y5vxl2wvz1nm0b6"; # Update via `nix-prefetch-url`
+    sha256 = "TCzXJAfWU3t696+dTBSen35SVhM7eiVJi4+b+DNb52M="; # Update via `nix-prefetch-url`
   };
 
   nativeBuildInputs = [
