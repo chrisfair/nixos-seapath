@@ -39,13 +39,16 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace Makefile \
-    --replace 'git describe' 'echo "${version}"' \
+    --replace 'git describe' 'echo "${version}"'
 
-    # Disable cockpit-po-plugin.js generation
+    # Disable the real rule, insert our own that ensures the directory exists
     sed -i '/pkg\/lib\/cockpit-po-plugin.js:/,/^[^ \t]/d' Makefile
-    echo "pkg/lib/cockpit-po-plugin.js:" >> Makefile
-    echo -e "\techo '{}' > pkg/lib/cockpit-po-plugin.js" >> Makefile
 
-  '';
+    cat >> Makefile <<EOF
+pkg/lib/cockpit-po-plugin.js:
+\tmkdir -p pkg/lib
+\techo '{}' > pkg/lib/cockpit-po-plugin.js
+EOF
+'';
 }
 
