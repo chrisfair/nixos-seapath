@@ -53,7 +53,7 @@ in
 
   services.cockpit.settings = {
     "WebService" = {
-      "CertificateFile" = "/etc/cockpit/ws-certs.d/0-selfsigned.pem";
+      "CertificateFile" = "/etc/cockpit/ws-certs.d/0-self-signed.pem";
     };
   };
 

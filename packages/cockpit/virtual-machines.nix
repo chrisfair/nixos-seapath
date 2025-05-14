@@ -22,8 +22,24 @@ stdenv.mkDerivation rec {
     substituteInPlace Makefile --replace /usr/share $out/share
     touch pkg/lib/cockpit.js
     touch pkg/lib/cockpit-po-plugin.js
-    touch dist/manifest.json
-  '';
+    cat > dist/manifest.json <<EOF
+{
+  "module": "machines",
+  "index": "index.html",
+  "requires": ["cockpit", "libvirt"],
+  "js": "index.js",
+  "css": "index.css",
+  "menu": {
+    "vms": {
+      "label": "Virtual Machines",
+      "path": "index.html",
+      "order": 60,
+      "keywords": ["libvirt", "vm", "kvm", "qemu", "virtual"]
+    }
+  }
+}
+EOF
+'';
 
   installPhase = ''
     runHook preInstall
@@ -33,15 +49,11 @@ stdenv.mkDerivation rec {
   '';
 
   postFixup = ''
-    if [ -f "$out/share/cockpit/machines/index.js.gz" ]; then
-      gunzip "$out/share/cockpit/machines/index.js.gz"
-    fi
+    gunzip "$out/share/cockpit/machines/index.js.gz"
 
-    if [ -f "$out/share/cockpit/machines/index.js" ]; then
-      sed -i "s#/usr/bin/python3#/usr/bin/env python3#g" "$out/share/cockpit/machines/index.js"
-      sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#g" "$out/share/cockpit/machines/index.js"
-      gzip -9 "$out/share/cockpit/machines/index.js"
-    fi
+    sed -i "s#/usr/bin/python3#/usr/bin/env python3#g" "$out/share/cockpit/machines/index.js"
+    sed -i "s#/usr/bin/pwscore#/usr/bin/env pwscore#g" "$out/share/cockpit/machines/index.js"
+    gzip -9 "$out/share/cockpit/machines/index.js"
   '';
 
   dontBuild = true;
