@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchzip, gettext, git, nodejs_18, python3, pkg-config }:
+{ lib, stdenv, fetchzip, gettext }:
 
 stdenv.mkDerivation rec {
   pname = "cockpit-machines";
@@ -15,6 +15,8 @@ stdenv.mkDerivation rec {
 
   postPatch = ''
     substituteInPlace Makefile --replace /usr/share $out/share
+
+    mkdir -p dist
 
     # Replace manifest.json with a working one
     cat > dist/manifest.json <<EOF
@@ -53,13 +55,15 @@ stdenv.mkDerivation rec {
 
   installPhase = ''
     mkdir -p $out/share/cockpit/machines
-    if [ -d dist ]; then
-      cp -r dist/* $out/share/cockpit/machines
-    else 
-      echo "ERROR: dist/ not found"
-      ls -l
-      exit 1
+    cp -r dist/* $out/share/cockpit/machines
+
+    if [ -f "$out/share/cockpit/machines.index.js.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.js.gz
     fi 
+
+    if [ -f "$out/share/cockpit/machines/index.css.gz" ]; then
+      gunzip $out/share/cockpit/machines/index.css.gz
+    fi
   '';
 
   dontBuild = true;

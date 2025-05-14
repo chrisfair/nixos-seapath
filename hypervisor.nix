@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  cockpit-machines = (pkgs.callPackage ./packages/cockpit/default.nix {}).virtual-machines ;
+  cockpit-machines = pkgs.callPackage ./packages/cockpit/virtual-machines.nix { };
 in
 
 {
@@ -9,19 +9,6 @@ in
   environment.sessionVariables.LIBVIRT_DEFAULT_URI = "qemu:///system";
   environment.etc."libvirt/libvirt.conf".text = ''
     uri_default = "qemu:///system"
-    uri_default_rw = 1
-    auth_unix_rw = 1
-    auth_unix_ro = 0
-    auth_tcp_rw = 0
-    auth_tcp_ro = 0
-    auth_tls_rw = 0
-    auth_tls_ro = 0
-    auth_kerberos_rw = 0
-    auth_kerberos_ro = 0
-    auth_gssapi_rw = 0
-    auth_gssapi_ro = 0
-    auth_sasl_rw = 0
-    auth_sasl_ro = 0
   '';
   users.groups.libvirt = { };
 
