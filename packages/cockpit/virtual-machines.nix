@@ -36,5 +36,14 @@ stdenv.mkDerivation rec {
     license     = licenses.lgpl21;
     platforms   = platforms.linux;
   };
+
+  postPatch = ''
+    substituteInPlace Makefile \
+      --replace 'git describe' 'echo "${version}"' \
+
+      # Disable cockpit-po-plugin.js generation
+      --replace 'git rev-parse --show-toplevel' '.' \
+      --replace 'git log -1 --pretty=format:%ct' 'date +%s'
+  '';
 }
 
