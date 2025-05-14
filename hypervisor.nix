@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  cockpit-machines = pkgs.callPackage ./packages/cockpit/default.nix { inherit pkgs; };
+  cockpit-machines = (pkgs.callPackage ./packages/cockpit/default.nix {}).virtual-machines ;
 in
 
 {
